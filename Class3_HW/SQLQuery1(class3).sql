@@ -7,27 +7,25 @@ Calculate the count of all grades per Teacher in the system for first 100 Studen
 Find the Maximal Grade, and the Average Grade per Student on all grades in the system
 */
 
-SELECT SUM(Grade) as Total	
+SELECT Count(Grade) as Total	
 from dbo.[Grade]
 GO
 
-SELECT b.ID, SUM(Grade) as Total
-FROM dbo.[Grade] o
-join dbo.Teacher b on o.ID = b.ID
-GROUP BY b.ID
+SELECT TeacherID, count(Grade) as GradeCount
+FROM dbo.Grade
+GROUP BY TeacherID
+order by TeacherID
 GO
 
-SELECT b.ID, SUM(Grade) as Total
-FROM dbo.[Grade] o
-join dbo.Teacher b on o.ID = b.ID
-WHERE StudentID < 100  
-GROUP BY b.ID
-Order by SUM(Grade) desc
+SELECT TeacherID, count(Grade) as GradeCount
+FROM dbo.Grade, dbo.Student s
+where StudentID < 100
+GROUP BY TeacherID
+order by TeacherID
 GO
 
-SELECT b.FirstName, b.LastName as StudentName
-,Max(Grade) as Total, AVG(Grade) as AverageAndMaxGrade
-FROM dbo.[Grade] o
-join dbo.Student b on o.ID = b.ID
-GROUP BY b.ID, b.id
+SELECT StudentId, Max(Grade) as MaxGrade, AVG(Cast(Grade as decimal(4,2))) as AverageGrade
+FROM dbo.Grade
+GROUP BY StudentId
+ORDER BY StudentID
 GO

@@ -9,30 +9,36 @@
 
 CREATE VIEW StudentGrades
 AS
-select StudentID,SUM(Grade) as GradesPerStudent
-from dbo.[Grade] o
+select StudentID, count(Grade) as GradesPerStudent
+from dbo.[Grade] 
 group by StudentID
 GO
 
-ALTER VIEW vv_CustomerOrders
+ALTER VIEW vv_StudentGrades
 AS
-select c.FirstName as StudentFirstName, c.LastName as StudentLastName, SUM(Grade) as GradesPerStudent
-from dbo.[Grade] o
-inner join dbo.Student c on o.StudentId = c.ID
-group by c.FirstName
-order by SUM(Grade) desc
+select c.FirstName as StudentFirstName, c.LastName as StudentLastName, COUNT(Grade) as GradesCount
+from dbo.[Grade] g
+inner join dbo.Student as c on g.StudentID = c.ID
+group by c.FirstName, c.LastName
 GO
 
-CREATE OR ALTER VIEW vv_StudentGradeDetails
-AS 
-select e.FirstName + ' ' + e.LastName as Student, p.ID as ProductName,
-sum(AchievementPoints) as ExamsPassed
+select * from vv_StudentGrades
+order by GradeCount desc
+go
 
-from dbo.[Grade] o
-inner join dbo.Student e on o.StudentID = e.ID
-inner join dbo.GradeDetails od on o.ID = od.GradeID
-inner join dbo.Grade p on od.ID = p.ID
-inner join dbo.AchievementType be on o.CourseID = be.ID
-where be.Description = 'Испит'
-group by e.FirstName + ' ' + e.LastName, p.ID
-GO -- ova baranje bese malku tesko za snaogjanje
+-----------------------------------
+
+drop view if exists vv_StudentGradeDetails;
+GO
+
+
+CREATE VIEW vv_StudentGradeDetails
+AS
+SELECT s.FirstName + N' ' + s.LastName as StudentName, COUNT(g.CourseID) as CourseCount
+FROM Grade as g
+INNER JOIN Student as s ON g.StudentID = s.ID
+INNER JOIN GradeDetails as gd ON g.ID = gd.GradeID
+INNER JOIN AchievementType as a on gd.AchievementTypeID = a.ID
+WHERE a.Name = 'Ispit'
+GROUP BY s.FirstName, s.LastName
+GO

@@ -7,24 +7,21 @@ Find the Grade Count, Maximal Grade, and the Average Grade per Student on all gr
 List Student First Name and Last Name next to the other details from previous query
 */
 
-SELECT b.ID as Teacher, SUM(Grade) as Total
-FROM dbo.[Grade] o
-join dbo.Teacher b on o.ID = b.ID
-GROUP BY b.ID
-HAVING SUM(Grade) > 200
+SELECT TeacherID as Teacher, count(Grade) as Total
+FROM dbo.[Grade] 
+GROUP BY TeacherID
+HAVING count(Grade) > 200
 GO
 
-SELECT b.ID as Teacher, SUM(Grade) as Total
-FROM dbo.[Grade] o
-join dbo.Teacher b on o.ID = b.ID
+SELECT TeacherID as Teacher, count(Grade) as CountGrade
+FROM dbo.[Grade] 
 WHERE StudentID < 100 
-GROUP BY b.ID
-HAVING SUM(Grade) > 50
+GROUP BY TeacherID
+HAVING count(Grade) > 50
 GO
 
-SELECT b.ID, Max(Grade) as Total, AVG(Grade) as Average
-FROM dbo.[Grade] o
-inner join dbo.Student b on o.StudentID = b.ID
-GROUP BY b.ID
+SELECT StudentID, Max(Grade) as Total, AVG(Grade) as Average
+FROM dbo.[Grade]
+GROUP BY StudentID
 HAVING  Max(Grade) = AVG(Grade)
 GO
